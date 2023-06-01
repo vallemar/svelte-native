@@ -43,6 +43,7 @@ export {
     BackNavigationOptions,
 } from "./navigation";
 
+declare let global: any;
 function installGlobalShims(): SvelteNativeDocument {
     //expose our fake dom as global document for svelte components
     let window = global as any;

@@ -2,10 +2,10 @@ import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
 import svelte from 'rollup-plugin-svelte';
 import pkg from './package.json'
+import copy from 'rollup-plugin-copy'
 
-
+const outputPath = "dist"
 let externalModules = pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []
-
 let localModules = ["dom", "components", "transitions"]
 
 let plugins = [
@@ -16,6 +16,12 @@ let plugins = [
     svelte({
         include: "src/components/**/*.svelte",
     }),
+    copy({
+      targets: [
+        { src: './nativescript.webpack.js', dest: `${outputPath}/` },
+        { src: './svelte.config.js', dest: `${outputPath}/` },
+      ]
+    })
 ];
 
 function module_defs() {
@@ -23,7 +29,7 @@ function module_defs() {
     return {
       input: `src/${mod}/index.ts`,
       output: [{
-        file: `dist/${mod}/index.js`,
+        file: `${outputPath}/${mod}/index.js`,
         format: 'esm',
       }],
       external: (id) => [...externalModules, ...localModules.filter(m => m != mod).map(m => `../${m}`)].some(prefix => id.startsWith(prefix)),
@@ -37,7 +43,7 @@ export default [
   {
     input: 'src/index.ts',
     output: [{
-      dir: './dist',
+      dir: `./${outputPath}`,
       entryFileNames: "index.js",
       format: 'esm',
     }
